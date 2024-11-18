@@ -34,12 +34,29 @@ class FormBuilderController extends Controller
             'message' => 'Form added successfully',
         ]);
     }
-    public function editData($id)
+    public function edit(Request $request)
     {
-        $form = FormBuilder::findOrFail($id);
-        return view('edit', ['form' => $form]);
-    }
+        $form = FormBuilder::findOrFail($request->id);
 
+
+        return response()->json([
+            'name' => $form->name,
+            'content' => $form->content,
+        ]);
+    }
+    public function update(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'form' => 'required',
+        ]);
+
+        $item = FormBuilder::findOrFail($request->id);
+        $item->name = $request->name;
+        $item->content = $request->form;
+        $item->update();
+        return response()->json('updated successfully');
+    }
     public function destroy(FormBuilder $form)
     {
        $form->delete();

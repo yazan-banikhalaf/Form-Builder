@@ -37,7 +37,7 @@
             outline: none;
         }
 
-        /* Styling the form builder container */
+    
         #fb-editor {
             border: 1px solid #ddd;
             padding: 10px;
@@ -47,7 +47,7 @@
             box-sizing: border-box;
         }
 
-        /* Add some spacing between the card body elements */
+
         .card-body > * {
             margin-bottom: 20px;
         }
@@ -69,30 +69,58 @@
     });
 
     $(function() {
-        var formData = {!! json_encode($form->content) !!};
-        $("#name").val("{{ $form->name }}");
-
-        formBuilder.actions.setData(formData);
+        $.ajax({
+            type: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+            url: '{{ URL('get-form-builder-edit') }}',
+            data: {
+                'id': '{{ $id }}'
+            },
+            success: function(data) {
+                $("#name").val(data.name);
+                formBuilder.actions.setData(data.content);
+            }
+        });
     });
 
-    // function saveForm(form) {
-    //     $.ajax({
-    //         type: 'post',
-    //         headers: {
-    //             'Authorization': 'Bearer ' + localStorage.getItem('token')
-    //         },
-    //         url: '{{ URL('update-form-builder') }}',
-    //         data: {
-    //             'form': form,
-    //             'name': $("#name").val(),
-    //             'id': {{ $form->id }},
-    //             "_token": "{{ csrf_token() }}",
-    //         },
-    //         success: function(data) {
-    //             location.href = "/form-builder";
-    //         }
-    //     });
-    // }
+    function saveForm(form) {
+    $.ajax({
+        type: 'post',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
+        url: '{{ URL('update-form-builder') }}',
+        data: {
+            'form': form,
+            'name': $("#name").val(),
+            'id': {{ $id }},
+            "_token": "{{ csrf_token() }}",
+        },
+        success: function(data) {
+            location.href = "/";
+        },
+        error: function(xhr) {
+
+            if (xhr.status === 422) {
+                var errors = xhr.responseJSON.errors;
+
+
+                if (errors.name) {
+                    alert('Name Error: ' + errors.name.join(', '));
+                }
+                if (errors.form) {
+                    alert('Form Content Error: ' + errors.form.join(', '));
+                }
+            } else {
+
+                alert('An error occurred while saving the form. Please try again.');
+            }
+        }
+    });
+}
+
 </script>
 @endsection
 
@@ -100,9 +128,9 @@
     <div class="card">
         <div class="card-body">
             <label for="name">Name</label>
-            <input type="text" id="name" name="name" class="form-controller" value="{{ $form->name }}" />
+            <input type="text" id="name" name="name" class="form-control" />
             @error('name')
-            <div class="error">{{ $message }}</div>
+                <div class="error">{{ $message }}</div>
             @enderror
             <div id="fb-editor"></div>
         </div>

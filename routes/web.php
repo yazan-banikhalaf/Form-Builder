@@ -13,9 +13,10 @@ Route::post('create', [FormBuilderController::class, 'store'])->name('store.form
 
 Route::delete('delete-form/{form}', [FormBuilderController::class, 'destroy'])->name('delete.form');
 
-Route::get('edit-form-builder/{id}', [FormBuilderController::class, 'editData'])->name('edit-form-builder');
+Route::get('get-form-builder-edit', [FormBuilderController::class, 'edit'])->name('get.form-builder-edit');
 
+Route::view('edit-form-builder/{id}', 'edit');
 
-
+Route::post('update-form-builder', [FormBuilderController::class, 'update']);
 
 

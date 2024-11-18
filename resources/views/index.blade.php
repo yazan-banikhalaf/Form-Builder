@@ -32,8 +32,6 @@
                             <td>{{ $form->name }}</td>
                             <td>
                                 <a href="{{ URL('edit-form-builder', $form->id) }}" class="btn btn-sm btn-primary">Edit</a>
-                                <a href="#" class="btn btn-sm btn-success">Show</a>
-                                <!-- Delete Form -->
                                 <form action="{{route('delete.form', $form->id)}}" method="POST" style="display: inline;">
                                     @csrf
                                     @method('DELETE')
